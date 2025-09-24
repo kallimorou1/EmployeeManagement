@@ -79,7 +79,7 @@ namespace EmployeeManagementAPI.Controllers
         public async Task<ActionResult> UpdateEmployee([FromBody] Employee employee)
         {
             var result = EmployeeData.Employees.FirstOrDefault(e => e.Id == employee.Id);
-            return employee == null ?  
+            return result == null ?  
                 StatusCode(StatusCodes.Status404NotFound) : 
                 await Task.FromResult(StatusCode(StatusCodes.Status201Created));           
         }
