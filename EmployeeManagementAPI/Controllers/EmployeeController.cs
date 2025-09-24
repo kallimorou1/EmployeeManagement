@@ -79,9 +79,16 @@ namespace EmployeeManagementAPI.Controllers
         public async Task<ActionResult> UpdateEmployee([FromBody] Employee employee)
         {
             var result = EmployeeData.Employees.FirstOrDefault(e => e.Id == employee.Id);
+            if (result != null)
+            {
+                result.Name = employee.Name;
+                result.Position = employee.Position;
+                result.Department = employee.Department;
+                result.Salary = employee.Salary;
+            }
             return result == null ?  
                 StatusCode(StatusCodes.Status404NotFound) : 
-                await Task.FromResult(StatusCode(StatusCodes.Status201Created));           
+                await Task.FromResult(StatusCode(StatusCodes.Status204NoContent));           
         }
         #endregion
 

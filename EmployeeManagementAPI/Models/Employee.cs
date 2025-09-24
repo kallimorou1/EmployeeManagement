@@ -10,15 +10,30 @@ namespace EmployeeManagementAPI.Models
         /// <summary>
         /// identifier
         /// </summary>
+        #region EMPLOYEE ID
         public int Id { get; set; }
-        public required string Name { get; set; }
-        public required string Position { get; set; }
-        public required string Department { get; set; }
+        #endregion
 
+        #region EMPLOYEE NAME
+        [StringLength(50, MinimumLength =1, ErrorMessage = "Name cannot be empty.")]
+        public required string Name { get; set; }
+        #endregion
+
+        #region EMPLOYEE POSITION
+        [StringLength(100, MinimumLength = 1, ErrorMessage = "Name cannot be empty.")]
+        public required string Position { get; set; }
+        #endregion
+
+        #region EMPLOYEE DEPARTMENT
+        [StringLength(100, MinimumLength = 1, ErrorMessage = "Name cannot be empty.")]
+        public required string Department { get; set; }
+        #endregion
+
+        #region EMPLOYEE SALARY
         [RegularExpression(@"^(((\d{1,3})(,\d{3})*)|(\d+))(.\d+)?$", ErrorMessage = "Salary must be a non-negative number and can include commas as thousand separators.")]
         [Range(0, int.MaxValue)]
         public decimal Salary { get; set; }
-
+        #endregion
     }
     #region EMPLOYEE DATA
     /// <summary>
