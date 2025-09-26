@@ -20,12 +20,12 @@ namespace EmployeeManagementAPI.Models
         #endregion
 
         #region EMPLOYEE POSITION
-        [StringLength(100, MinimumLength = 1, ErrorMessage = "Name cannot be empty.")]
+        [StringLength(100, MinimumLength = 1, ErrorMessage = "Position cannot be empty.")]
         public required string Position { get; set; }
         #endregion
 
         #region EMPLOYEE DEPARTMENT
-        [StringLength(100, MinimumLength = 1, ErrorMessage = "Name cannot be empty.")]
+        [StringLength(100, MinimumLength = 1, ErrorMessage = "Department cannot be empty.")]
         public required string Department { get; set; }
         #endregion
 
