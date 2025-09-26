@@ -12,6 +12,7 @@ namespace EmployeeManagementAPI.Controllers
     /// </summary>
     public class EmployeeController : ControllerBase
     {
+
         #region GET ALL EMPLOYEES
 
         /// <summary>
