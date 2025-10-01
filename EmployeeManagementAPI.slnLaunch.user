@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "BothEmployeeManagament",
+    "Projects": [
+      {
+        "Path": "EmployeeManagementAPI\\EmployeeManagement.API.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "..\\EmployeeManagementPortal\\EmployeeManagementPortal\\EmployeeManagement.Portal.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

@@ -36,3 +36,9 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+builder.Services.AddHttpClient("MyAPI", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7109");
+    // Additional configuration (headers, timeouts, etc.)
+});
