@@ -1,4 +1,4 @@
-﻿using EmployeeManagementAPI.Models;
+﻿using EmployeeManagement.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagementAPI.Controllers
