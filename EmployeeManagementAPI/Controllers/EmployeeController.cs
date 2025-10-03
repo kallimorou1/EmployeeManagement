@@ -1,7 +1,11 @@
-﻿using EmployeeManagement.Shared.Models;
+﻿using EmployeeManagement.API.Data;
+using EmployeeManagement.API.Services;
+using EmployeeManagement.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
-namespace EmployeeManagementAPI.Controllers
+namespace EmployeeManagement.API.Controllers
 
 {
     [ApiController]
@@ -12,7 +16,14 @@ namespace EmployeeManagementAPI.Controllers
     /// </summary>
     public class EmployeeController : ControllerBase
     {
+        private readonly EmployeeContext _context;
+        private readonly IEmployeeService _employeeService;
 
+        public EmployeeController(EmployeeContext context, IEmployeeService employeeService)
+        {
+            _context = context;
+            _employeeService = employeeService;
+        }
         #region GET ALL EMPLOYEES
 
         /// <summary>
@@ -22,15 +33,15 @@ namespace EmployeeManagementAPI.Controllers
         /// source.</remarks>
         /// <returns>An <see cref="ActionResult{T}"/> containing an <see cref="IEnumerable{T}"/> of <see cref="Employee"/>
         /// objects if employees are available; otherwise, a 404 Not Found status code.</returns>
+     
         [HttpGet("GetAll")]
 
-        public async Task <ActionResult<IEnumerable<Employee>>> GetAll()
+        public async Task<ActionResult<IEnumerable<Employee>>> GetAll()
         {
-            if (EmployeeData.Employees == null || EmployeeData.Employees.Count == 0)
-            {
-                return StatusCode(StatusCodes.Status404NotFound);
-            }
-            return await Task.FromResult(Ok(EmployeeData.Employees));
+            var employees = await _employeeService.GetAll();
+            if (employees == null || !employees.Any())
+                return NotFound();
+            return Ok(employees);
         }
         #endregion
 
@@ -40,11 +51,12 @@ namespace EmployeeManagementAPI.Controllers
         /// Gets an employee by their ID.
         /// </summary>
         /// <param name="id"> identifier for employee</param>
-        /// <returns> returns the employee with the specified ID. </returns>
+        /// <returns> returns the employee with the specified ID. </returns> 
+
         [HttpGet("GetById")]
         public async Task<ActionResult<Employee>> GetById([FromQuery] int id)
         {
-            var employee = EmployeeData.Employees.FirstOrDefault(e => e.Id == id);
+            var employee = await _employeeService.GetEmployeeById(id);
             if (employee == null)
             {
                 return StatusCode(StatusCodes.Status404NotFound);
@@ -59,12 +71,14 @@ namespace EmployeeManagementAPI.Controllers
         /// </summary>
         /// <param name=""></param>
         /// <returns> returns employee and 201 status code </returns>
-        [HttpPost( "Add" )]
+        [HttpPost("Add")]
         public async Task<ActionResult> Add([FromBody] Employee newEmployee)
         {
-            newEmployee.Id = EmployeeData.Employees.Max(e => e.Id) + 1;
-            EmployeeData.Employees.Add(newEmployee);
-            return await Task.FromResult(StatusCode(StatusCodes.Status201Created, newEmployee));
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var created = await _employeeService.Add(newEmployee);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
         #endregion
 
@@ -76,21 +90,20 @@ namespace EmployeeManagementAPI.Controllers
         /// employee details.</param>
         /// <returns>An <see cref="ActionResult"/> indicating the result of the operation. Returns a 404 status code if the
         /// employee is not found.</returns>
+
         [HttpPut("Update")]
-        public async Task<ActionResult> UpdateEmployee([FromBody] Employee employee)
+        public async Task<ActionResult> UpdateEmployee(int id, [FromBody] Employee employee)
         {
-            var result = EmployeeData.Employees.FirstOrDefault(e => e.Id == employee.Id);
-            if (result != null)
-            {
-                result.Name = employee.Name;
-                result.Position = employee.Position;
-                result.Department = employee.Department;
-                result.Salary = employee.Salary;
-            }
-            return result == null ?  
-                StatusCode(StatusCodes.Status404NotFound) : 
-                await Task.FromResult(StatusCode(StatusCodes.Status204NoContent));           
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var updated = await _employeeService.UpdateEmployee(id, employee);
+            if (updated == null)
+                return NotFound();
+
+            return Ok(updated);
         }
+
         #endregion
 
         #region DELETE EMPLOYEE BY ID
@@ -102,15 +115,13 @@ namespace EmployeeManagementAPI.Controllers
         [HttpDelete("DeleteById")]
         public async Task<ActionResult> DeleteById([FromQuery] int id)
         {
-            var employee = EmployeeData.Employees.FirstOrDefault(e => e.Id == id);
-            if (employee == null)
-                return StatusCode(StatusCodes.Status404NotFound);
-            else
-            {
-                EmployeeData.Employees.Remove(employee);
-                return await Task.FromResult(StatusCode(StatusCodes.Status204NoContent));
-            }
+            var success = await _employeeService.DeleteById(id);
+            if (!success)
+                return NotFound();
+
+            return NoContent();
         }
+       
         #endregion
     }
 }
