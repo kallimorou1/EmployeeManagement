@@ -92,15 +92,14 @@ namespace EmployeeManagement.API.Controllers
         /// employee is not found.</returns>
 
         [HttpPut("Update")]
-        public async Task<ActionResult> UpdateEmployee(int id, [FromBody] Employee employee)
+        public async Task<ActionResult> UpdateEmployee([FromBody] Employee employee)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var updated = await _employeeService.UpdateEmployee(id, employee);
-            if (updated == null)
-                return NotFound();
+            var updated = await _employeeService.UpdateEmployee(employee);
 
+            if (updated is null)return NotFound();
             return Ok(updated);
         }
 

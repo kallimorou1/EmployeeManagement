@@ -37,12 +37,12 @@ namespace EmployeeManagement.API.Services
         #endregion
 
         #region UPDATE EMPLOYEE
-        public async Task<Employee?> UpdateEmployee(int id, Employee employee)
+        public async Task<Employee?> UpdateEmployee(Employee employee)
         {
-            if (id != employee.Id)
-                return null;
+            //if (id != employee.Id)
+            //    return null;
 
-            var existing = await _context.Employees.FindAsync(id);
+            var existing = await _context.Employees.FindAsync(employee.Id);
             if (existing == null)
                 return null;
 

@@ -7,7 +7,7 @@ namespace EmployeeManagement.API.Services
         Task<List<Employee>> GetAll();
         Task<Employee?> GetEmployeeById(int id);
         Task<Employee> Add(Employee employee);
-        Task<Employee?> UpdateEmployee(int id, Employee employee);
+        Task<Employee?> UpdateEmployee( Employee employee);
         Task<bool> DeleteById(int id);
     }
 }
