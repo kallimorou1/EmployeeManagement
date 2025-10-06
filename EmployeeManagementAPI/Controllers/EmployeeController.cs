@@ -1,4 +1,5 @@
 ﻿using EmployeeManagement.API.Data;
+using EmployeeManagement.API.Helpers;
 using EmployeeManagement.API.Services;
 using EmployeeManagement.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -36,12 +37,15 @@ namespace EmployeeManagement.API.Controllers
      
         [HttpGet("GetAll")]
 
-        public async Task<ActionResult<IEnumerable<Employee>>> GetAll()
+        public async Task<ActionResult<IEnumerable<Employee>>> GetAll([FromQuery] PaginationDTO pagination)
         {
-            var employees = await _employeeService.GetAll();
+            var queryable = _context.Employees.AsQueryable();
+            await HttpContext.InsertPaginationParametersInResponse(queryable, pagination.QuantityPerPage);
+            var employees = await _employeeService.GetAll(); 
             if (employees == null || !employees.Any())
                 return NotFound();
-            return Ok(employees);
+            //return Ok(employees);
+            return await queryable.Paginate(pagination).ToListAsync();
         }
         #endregion
 
