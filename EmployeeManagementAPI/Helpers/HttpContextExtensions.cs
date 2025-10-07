@@ -5,14 +5,18 @@ using System.Threading.Tasks;
 
 namespace EmployeeManagement.API.Helpers
 {
-        public static class HttpContextExtensions
+    public static class HttpContextExtensions
+    {
+        public static async Task InsertPaginationParametersInResponse<T>(this HttpContext httpContext,
+            IQueryable<T> queryable, int recordsPerPage)
         {
-            public static async Task InsertPaginationParametersInResponse<T>(this HttpContext httpContext,
-                IQueryable<T> queryable, int recordsPerPage)
-            {
-                double count = await queryable.CountAsync();
-                double pagesQuantity = Math.Ceiling(count / recordsPerPage);
-                httpContext.Response.Headers.Add("pagesQuantity", pagesQuantity.ToString());
-            }
+            double count = await queryable.CountAsync();
+            double pagesQuantity = Math.Ceiling(count / recordsPerPage);
+
+            httpContext.Response.Headers["pagesQuantity"] = pagesQuantity.ToString();
+
+            httpContext.Response.Headers["X-Total-Count"] = count.ToString();
+
         }
+    }
 }

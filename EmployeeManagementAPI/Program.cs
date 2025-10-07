@@ -70,7 +70,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy =>
         policy.AllowAnyOrigin()
               .AllowAnyMethod()
-              .AllowAnyHeader());
+              .AllowAnyHeader()
+              .WithExposedHeaders("pagesQuantity", "X-Total-Count"));
 });
 
 var app = builder.Build();
