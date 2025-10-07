@@ -3,6 +3,7 @@ using EmployeeManagement.API.Helpers;
 using EmployeeManagement.API.Services;
 using EmployeeManagement.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagement.API.Controllers
@@ -40,11 +41,33 @@ namespace EmployeeManagement.API.Controllers
         {
 
             var queryable = _context.Employees.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))
+            { 
+                var term = pagination.SearchTerm.ToLower();
+                queryable = queryable.Where(e => 
+                e.Name.ToLower().Contains(term) || 
+                e.Department.ToLower().Contains(term) ||
+                e.Position.ToLower().Contains(term)
+                );
+            }
+
+            if(String.IsNullOrEmpty(pagination.SortColumn))
+            {
+                pagination.SortColumn = "Id";
+            }
+
             //Insert pagination parameters in the response headers
             await HttpContext.InsertPaginationParametersInResponse(queryable, pagination.QuantityPerPage);
             //Applied pagination and return the data 
-            var employees = await queryable
-                .OrderBy(e => e.Id)
+            var employees = (pagination.SortOrder == Shared.Models.SortOrder.Ascending) ?
+                await queryable
+                .OrderBy(p => EF.Property<Employee>(p, pagination.SortColumn))
+                .Paginate(pagination)
+                .ToListAsync()
+            :
+            await queryable
+                .OrderByDescending(p => EF.Property<Employee>(p, pagination.SortColumn))
                 .Paginate(pagination)
                 .ToListAsync();
 
