@@ -1,4 +1,5 @@
-﻿using EmployeeManagement.API.Data;
+﻿using Azure;
+using EmployeeManagement.API.Data;
 using EmployeeManagement.API.Helpers;
 using EmployeeManagement.API.Services;
 using EmployeeManagement.Shared.Models;
@@ -42,6 +43,7 @@ namespace EmployeeManagement.API.Controllers
 
             var queryable = _context.Employees.AsQueryable();
 
+
             if (!string.IsNullOrWhiteSpace(pagination.SearchTerm))
             { 
                 var term = pagination.SearchTerm.ToLower();
@@ -51,8 +53,9 @@ namespace EmployeeManagement.API.Controllers
                 e.Position.ToLower().Contains(term)
                 );
             }
+       
 
-            if(String.IsNullOrEmpty(pagination.SortColumn))
+            if (string.IsNullOrWhiteSpace(pagination.SortColumn))
             {
                 pagination.SortColumn = "Id";
             }
