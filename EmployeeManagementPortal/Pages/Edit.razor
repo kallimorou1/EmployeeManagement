@@ -1,0 +1,66 @@
+﻿@page "/edit/{Id:int}"
+@using System.ComponentModel.DataAnnotations;
+@using global::EmployeeManagement.Portal.Services
+@using global::EmployeeManagement.Shared.Models
+@inject NavigationManager NavigationManager
+@inject IEmployeeService EmployeeService
+
+
+@if (editViewModel == null || !editViewModel.Initilized)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <PageTitle>Edit Employee</PageTitle>
+    <h3>Update Employee</h3>
+
+    @if (!string.IsNullOrEmpty(editViewModel.message))
+    {
+        <div class="@editViewModel.message">@editViewModel.message</div>
+    }
+    else
+    {
+        <EditForm Model="editViewModel.employee" OnValidSubmit="editViewModel.HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div>
+                <label for="name">Name:</label>
+                <InputText id="name" @bind-Value="editViewModel.employee.Name" />
+            </div>
+            <div>
+                <label for="position">Position:</label>
+                <InputText id="position" @bind-Value="editViewModel.employee.Position" />
+            </div>
+            <div>
+                <label for="department">Department:</label>
+                <InputText id="department" @bind-Value="editViewModel.employee.Department" />
+            </div>
+            <div>
+                <label for="salary">Salary:</label>
+                <InputNumber id="salary" @bind-Value="editViewModel.employee.Salary" />
+            </div>
+            <button type="submit" class="btn btn-success">Save</button>
+        </EditForm>
+    }
+    <button class="btn btn-info" @onclick="editViewModel.EmployeeManagement">Back to Employee List</button>
+
+}
+
+@code {
+
+    [Parameter] public int Id { get; set; }
+    EditViewModel? editViewModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        editViewModel = new EditViewModel(NavigationManager, EmployeeService, this) { PageTitle ="Edit Employee"};
+        await editViewModel.OnInitialized(Id);
+
+    }
+
+    public void Refresh()
+    {
+        StateHasChanged();
+    }
+}

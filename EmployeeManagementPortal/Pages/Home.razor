@@ -1,0 +1,81 @@
+﻿@page "/"
+@using global::EmployeeManagement.Portal.Layout
+@using global::EmployeeManagement.Portal.Services
+@using global::EmployeeManagement.Portal.ViewModels
+@layout AppLayout
+@inject IEmployeeService EmployeeService
+@inject NavigationManager navigationManager
+
+@* <style> 
+    .container{
+        background: black;
+    }
+</style> *@
+
+@if(homeViewModel == null || !homeViewModel.Initilized)
+{
+    <p><em>Loading dashboard...</em></p>
+}
+else
+{
+    <PageTitle>@homeViewModel.PageTitle</PageTitle>
+
+    <h1 class="mb-4">Employee Dashboard</h1>
+
+    if (homeViewModel.Employees == null || !homeViewModel.Employees.Any())
+    {
+        <p>No employees found.</p>
+    }
+    else
+    {
+        <div class="container">
+            <div class="row mb-4 justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card text-center shadow-lg border-0 purple-card">
+                        <div class="card-body py-5">
+                            <h4 class="card-title mb-3">Total Employees</h4>
+                            <h1 class="display-3 fw-bold">@homeViewModel.Employees.Count</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                @foreach (var group in homeViewModel.Employees.GroupBy(e => e.Position))
+                {
+                    <div class="col-md-3 col-sm-6 mb-3">
+                        <div class="card text-center shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title">@group.Key</h5>
+                                <h2 class="card-text fw-bold" style="color: #7238c2;">@group.Count()</h2>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+    }
+    <div>
+        <DxButton RenderStyle="ButtonRenderStyle.Success"
+                  Text="Go to employee management page"
+                  Click="homeViewModel.OnButtonClick"
+                  style="margin: 2rem">
+        </DxButton>
+    </div>
+}
+@*how to use components (reusable code)*@
+<EmployeeManagement.Portal.Components.Time date="DateTime.Now"></EmployeeManagement.Portal.Components.Time>
+
+
+@code {
+    HomeViewModel? homeViewModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        homeViewModel = new HomeViewModel(EmployeeService, navigationManager) { PageTitle = "Home Page" }; 
+        await homeViewModel.LoadData();
+    }
+
+
+}

@@ -1,0 +1,83 @@
+﻿@page "/create"
+@using global::EmployeeManagement.Portal.Layout
+@using global::EmployeeManagement.Portal.Services
+@using global::EmployeeManagement.Portal.ViewModels
+@layout AppLayout
+@inject IEmployeeService EmployeeService
+@inject NavigationManager NavigationManager
+
+@if (createViewModel == null || !createViewModel.Initilized)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <PageTitle>Create Employee</PageTitle>
+    <h3>Create a new employee</h3>
+
+    @if (!string.IsNullOrEmpty(createViewModel.Message))
+    {
+        <div class="@createViewModel.MessageClass">@createViewModel.Message</div>
+    }
+    else
+    {
+        <EditForm Model="createViewModel.Employee" OnValidSubmit="createViewModel.HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div>
+                <label for="name">Name:</label>
+                <InputText id="name"
+                           @bind-Value="createViewModel.Employee.Name" />
+            </div>
+
+            <div>
+                <label for="position">Position:</label>
+                <InputText id="position" @bind-Value="createViewModel.Employee.Position" />
+            </div>
+
+            <div>
+                <label for="department">Department:</label>
+                <InputText id="department" @bind-Value="createViewModel.Employee.Department" />
+            </div>
+
+            <div>
+                <label for="salary">Salary:</label>
+                <InputNumber id="salary" @bind-Value="createViewModel.Employee.Salary" />
+            </div>
+
+            <button type="submit" class="btn btn-success">Save</button> 
+           
+
+        </EditForm>
+    }
+    @* <button class="btn btn-info" @onclick="createViewModel.NavigateToEmployeeList">
+        Back to Employee List
+    </button> *@
+    <div>
+        <DxButton RenderStyle="ButtonRenderStyle.Primary"
+                  Text="Back to Employee List"
+                  Click="createViewModel.NavigateToEmployeeList"
+                  style="margin: 1rem">
+        </DxButton>
+    </div>
+
+    
+}
+
+@code {
+
+    CreateViewModel? createViewModel;
+
+    protected override async Task OnInitializedAsync()
+    {
+        createViewModel = new CreateViewModel(NavigationManager, EmployeeService, this) { PageTitle = "Create Employee" }; ;
+        await createViewModel.OnInitialize();
+
+    }
+
+    public void Refresh()
+    {
+        StateHasChanged();
+    }
+}
