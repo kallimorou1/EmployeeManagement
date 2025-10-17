@@ -67,7 +67,7 @@ else
 }
 else
 {
-    @* <table class="table bg-white shadow-sm">
+    <table class="table bg-white shadow-sm">
         <thead class="table-dark">
             <tr>
                 <th> ID </th>
@@ -97,19 +97,7 @@ else
             }
 
         </tbody>
-    </table> *@
-
-        <DxGrid Data="@eManagementViewModel.LoadEmployees">
-        <Columns>
-                <DxGridDataColumn FieldName="eManagementViewModel.Id" Caption="@("Id")" />
-                <DxGridDataColumn FieldName="eManagementViewModel.Name" Caption="@("Name")" />
-                <DxGridDataColumn FieldName="eManagementViewModel.Position" Caption="@("Position")" />
-                <DxGridDataColumn FieldName="eManagementViewModel.Department" Caption="@("Department")" />
-                <DxGridDataColumn FieldName="eManagementViewModel.Salary" Caption="@("Salary")" />
-                <DxGridDataColumn FieldName="eManagementViewModel.UpdateEmployee" Caption="@("Actions")" />
-        </Columns>
-    </DxGrid>
-
+    </table> 
 
     <!-- Delete Confirmation Modal -->
         @if (eManagementViewModel.isModalVisible)
