@@ -1,22 +1,35 @@
 using EmployeeManagement.API.Data;
-using Microsoft.EntityFrameworkCore;
 using EmployeeManagement.API.Services;
+using Microsoft.AspNetCore.Localization;
+using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
-builder.Services.AddControllers();
+// Culture setup: 
+CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("el-GR");
+
+//services to the container
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.NumberHandling =
+            System.Text.Json.Serialization.JsonNumberHandling.AllowReadingFromString;
+    });
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Register DbContext
+//Register DbContext
 builder.Services.AddDbContext<EmployeeContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Register your service and interface
+// Register service and interface
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 
-// Allow CORS (if needed)
+// Allow CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -28,7 +41,17 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure middleware
+//request localization for UI (Greek)
+var defaultCulture = new CultureInfo("el-GR");
+var localizationOptions = new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture(defaultCulture),
+    SupportedCultures = new[] { defaultCulture },
+    SupportedUICultures = new[] { defaultCulture }
+};
+app.UseRequestLocalization(localizationOptions);
+
+//Configure middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -37,8 +60,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
-
 app.UseAuthorization();
-app.MapControllers();
 
+app.MapControllers();
 app.Run();

@@ -31,7 +31,9 @@ namespace EmployeeManagement.Shared.Models
         #endregion
 
         #region EMPLOYEE SALARY
-        [Range(typeof(decimal), "0", "999999999999.99", ErrorMessage = "Salary must be between 0 and 999,999,999,999.99")]
+        [Display(Name = "Salary")]
+        [DataType(DataType.Currency)]
+        [Range(0, 999_999_999_999.99, ErrorMessage = "Salary must be between 0 and 999,999,999,999.99")]
         public decimal Salary { get; set; }
         #endregion
     }

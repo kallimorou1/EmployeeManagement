@@ -1,6 +1,8 @@
 ﻿using EmployeeManagement.API.Data;
 using EmployeeManagement.Shared.Models;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace EmployeeManagement.API.Services
 {
@@ -39,16 +41,13 @@ namespace EmployeeManagement.API.Services
         #region UPDATE EMPLOYEE
         public async Task<Employee?> UpdateEmployee(Employee employee)
         {
-            //if (id != employee.Id)
-            //    return null;
+                    var existing = await _context.Employees.FindAsync(employee.Id);
+                    if (existing == null)
+                        return null;
 
-            var existing = await _context.Employees.FindAsync(employee.Id);
-            if (existing == null)
-                return null;
-
-            _context.Entry(existing).CurrentValues.SetValues(employee);
-            await _context.SaveChangesAsync();
-            return employee;
+                    _context.Entry(existing).CurrentValues.SetValues(employee);
+                    await _context.SaveChangesAsync();
+                    return employee;    
         }
         #endregion
 
