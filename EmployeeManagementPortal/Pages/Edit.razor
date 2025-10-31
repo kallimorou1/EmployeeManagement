@@ -40,11 +40,19 @@ else
                 <label for="salary">Salary:</label>
                 <InputNumber id="salary" @bind-Value="editViewModel.employee.Salary" />
             </div>
-            <button type="submit" class="btn btn-success">Save</button>
+            <DxButton RenderStyle="ButtonRenderStyle.Light"
+                      Text="Save"
+                      Click="editViewModel.HandleValidSubmit"
+                      style="margin: 1rem">
+            </DxButton>
         </EditForm>
     }
-    <button class="btn btn-info" @onclick="editViewModel.EmployeeManagement">Back to Employee List</button>
-
+ 
+    <DxButton RenderStyle="ButtonRenderStyle.Primary"
+              Text="Back to Employee List"
+              Click="editViewModel.EmployeeManagement"
+              style="margin: 1rem">
+    </DxButton>
 }
 
 @code {

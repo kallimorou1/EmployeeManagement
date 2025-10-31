@@ -4,6 +4,7 @@
 @using global::EmployeeManagement.Portal.Services
 @using global::EmployeeManagement.Shared.Models
 @using global::EmployeeManagement.Portal.ViewModels
+@using DevExpress.Blazor
 @layout AppLayout
 @inject IEmployeeService EmployeeService
 @inject NavigationManager NavigationManager
@@ -16,129 +17,112 @@
 }
 else
 {
-<PageTitle>Employee Management</PageTitle>
+    <PageTitle>Employee Management</PageTitle>
 
-<h1>Employee Management</h1>
-
-
-    @if (!string.IsNullOrEmpty(eManagementViewModel.message))
-{
-        <div class="@eManagementViewModel.messageClass">@eManagementViewModel.message</div>
-}
-
-<div class="form-inline mb-2">
-    <input type="text" class="form-control mr-2"
-               @bind="eManagementViewModel.searchTerm"
-           placeholder="Search by name, department, or position" />
-</div>
-
-<div class="form-inline mb-2">
-    <label for="sortColumn" class="mr-2">Sort by:</label>
-        <select id="sortColumn" class="form-control mr-2" @bind="eManagementViewModel.SortColumn" @bind:event="onchange">
-            <option value="Name">Name</option>
-            <option value="Position">Position</option>
-            <option value="Department">Department</option>
-            <option value="Salary">Salary</option>
-    </select>
-        <select id="sortOrder" class="form-control mr-2" @bind="eManagementViewModel.SortOrder" @bind:event="onchange">
-        <option value="asc">Ascending</option>
-        <option value="desc">Descending</option>
-    </select>
-</div>
-
-    <button type="button" class="btn btn-dark" @onclick="eManagementViewModel.ApplyFilter">Apply</button>
-    <button type="button" class="btn btn-dark" @onclick="eManagementViewModel.ClearFilter">Clear</button>
+    <h1>Employee Management</h1>
 
 
 
     @if (eManagementViewModel.Employees != null && eManagementViewModel.Employees.Any())
-{
+    {
         <Pagination TotalPagesQuantity="@eManagementViewModel.TotalPagesQuantity"
                     currentPage="@eManagementViewModel.currentPage"
-                Radius="2"
+                    Radius="2"
                     SelectedPage="eManagementViewModel.SelectedPage">
-    </Pagination>
-}
+        </Pagination>
+    }
 
     @if (eManagementViewModel.Employees == null || eManagementViewModel.Employees.Count == 0)
 
-{
-    <p><em> No employees found </em></p>
-}
-else
-{
-    <table class="table bg-white shadow-sm">
-        <thead class="table-dark">
-            <tr>
-                <th> ID </th>
-                <th> Name </th>
-                <th>Position </th>
-                <th> Department </th>
-                <th>Salary </th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-
-                @foreach (var employee in eManagementViewModel.Employees)
-            {
-                <tr>
-                    <td>@employee.Id</td>
-                    <td>@employee.Name</td>
-                    <td>@employee.Position</td>
-                    <td>@employee.Department</td>
-                    <td>@employee.Salary</td>
-                    <td>
-                            <button class="btn btn-primary" @onclick="() => eManagementViewModel.UpdateEmployee(employee.Id)">Edit</button>
-                            <button class="btn btn-danger" @onclick="() => eManagementViewModel.ShowDeleteModal(employee.Id)">Delete</button>
-
-                    </td>
-                </tr>
-            }
-
-        </tbody>
-    </table> 
-
-    <!-- Delete Confirmation Modal -->
-        @if (eManagementViewModel.isModalVisible)
     {
-        <div class="modal show d-block" tabindex="-1" role="dialog" style="background-color: rgba(0,0,0,0.5);">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Confirm Deletion</h5>
-                            <button type="button" class="close" @onclick="eManagementViewModel.HideDeleteModal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <p>Are you sure you want to delete this employee?</p>
-                    </div>
-                    <div class="modal-footer">
-                            <button type="button" class="btn btn-warning" @onclick="eManagementViewModel.HideDeleteModal">Cancel</button>
-                            <button type="button" class="btn btn-danger" @onclick="eManagementViewModel.ConfirmDeleteEmployee">Delete</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        <p><em> No employees found </em></p>
     }
+    else
+    {
+        <DxGrid Data="@eManagementViewModel.Employees"
+                EditModelSaving="@OnEditModelSaving"
+                AllowInsert="false"
+                AllowDelete="false"
+                DataItemDeleting="@OnDataItemDeleting"
+                KeyFieldName="Id"
+                ShowFilterRow="true"
+                PageSize="10"
+                ShowGroupPanel="true">
+            <Columns>
+                <DxGridDataColumn FieldName="Id" Caption="ID" />
+                <DxGridDataColumn FieldName="Name" Caption="Name" />
+                <DxGridDataColumn FieldName="Position" Caption="Position" />
+                <DxGridDataColumn FieldName="Department" Caption="Department" />
+                <DxGridDataColumn FieldName="Salary" Caption="Salary" />
+                <DxGridCommandColumn Caption="Actions" Width="150px">
+                    <CellDisplayTemplate Context="cellContext">
+                        @{
+                            var employee = cellContext.DataItem as Employee;
+                        }
+                <DxButton Text="Edit"
+                          RenderStyle="ButtonRenderStyle.Primary"
+                          Click="@(async () => await eManagementViewModel.UpdateEmployee(employee.Id))" />
+                <DxButton Text="Delete"
+                          RenderStyle="ButtonRenderStyle.Danger"
+                          Click="@(async () => await eManagementViewModel.ShowDeleteModal(employee.Id))" />
+            </CellDisplayTemplate>
+        </DxGridCommandColumn>
+    </Columns>
+</DxGrid>
+
+
+<!-- Delete Confirmation Modal -->
+<DxPopup @bind-Visible="@eManagementViewModel.isModalVisible"
+         HeaderText="Confirm Deletion"
+         ShowCloseButton="true"
+         Width="400px">
+    <div class="mb-3">
+        <p>Are you sure you want to delete this employee?</p>
+    </div>
+    <DxButton RenderStyle="ButtonRenderStyle.Secondary"
+              Text="Cancel"
+              Click="eManagementViewModel.HideDeleteModal" />
+    <DxButton RenderStyle="ButtonRenderStyle.Danger"
+              Text="Delete"
+              Click="eManagementViewModel.ConfirmDeleteEmployee" />
+</DxPopup>
 }
 
-    <button class="btn btn-light" @onclick="eManagementViewModel.CreateEmployee">Create</button>
+<DxButton RenderStyle="ButtonRenderStyle.Success"
+          Text="Create Employee"
+          Click="@OnCreateClick"
+          style="margin: 2rem">
+</DxButton>
+
+
 }
 
 @code {
 
-    [Parameter] public int Id { get; set; }
     EManagementViewModel? eManagementViewModel;
-   
 
     protected override async Task OnInitializedAsync()
     {
         eManagementViewModel = new EManagementViewModel(NavigationManager, EmployeeService, this) { PageTitle = "Employee Management" };
-       await eManagementViewModel.OnInitialized();
+        await eManagementViewModel.OnInitialized();
 
+    }
+
+    async Task OnEditModelSaving(GridEditModelSavingEventArgs args)
+    {
+        var employee = args.EditModel as Employee;
+        await eManagementViewModel.UpdateEmployee(employee.Id);
+    }
+
+    async Task OnDataItemDeleting(GridDataItemDeletingEventArgs args)
+    {
+        var employee = args.DataItem as Employee;
+        await eManagementViewModel.ShowDeleteModal(employee.Id);
+    }
+
+    void OnCreateClick()
+    {
+        NavigationManager.NavigateTo("/Create");
     }
 
     public void Refresh()

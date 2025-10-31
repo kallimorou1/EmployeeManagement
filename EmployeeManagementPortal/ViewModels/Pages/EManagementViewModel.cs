@@ -155,9 +155,9 @@ public class EManagementViewModel : ParentViewModel
     #endregion
 
     #region Naviation
-    public void UpdateEmployee(int id)
+    public async Task UpdateEmployee(int id)
     {
-        _navigation.NavigateTo($"/edit/{id}");
+       _navigation.NavigateTo($"/edit/{id}");
     }
 
     public void CreateEmployee()
@@ -169,7 +169,7 @@ public class EManagementViewModel : ParentViewModel
 
     #region Modal Filter
     // Show the delete confirmation modal
-    public void ShowDeleteModal(int id)
+    public async Task ShowDeleteModal(int id)
     {
         employeeIdToDelete = id;  // Store the ID of the employee to delete
         isModalVisible = true; // Show the modal

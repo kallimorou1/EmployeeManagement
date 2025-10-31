@@ -57,10 +57,10 @@ else
 
     }
     <div>
-        <DxButton RenderStyle="ButtonRenderStyle.Success"
-                  Text="Go to employee management page"
-                  Click="homeViewModel.OnButtonClick"
-                  style="margin: 2rem">
+        <DxButton RenderStyle="ButtonRenderStyle.Primary"
+                  Text="Editor"
+                  Click="@GoToEditor"
+                  style="margin: 1rem">
         </DxButton>
     </div>
 }
@@ -77,5 +77,8 @@ else
         await homeViewModel.LoadData();
     }
 
-
+    void GoToEditor()
+    {
+        navigationManager.NavigateTo("/Editor");
+    }
 }

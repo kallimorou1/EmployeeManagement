@@ -11,6 +11,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Layout\NavMenu.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Layout\NavMenu.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="DevExpress.Blazor" Version="25.1.4" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.20" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.20" PrivateAssets="all" />

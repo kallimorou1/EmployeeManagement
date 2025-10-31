@@ -1,0 +1,30 @@
+﻿@page "/Editor"
+@inject HttpClient Http
+
+<select @bind="CurrentCulture">
+    <option value="en-US">English</option>
+    <option value="el-GR">Greek</option>
+</select>
+
+<DxHtmlEditor DocumentContent="@HtmlContent"
+              DocumentCulture="@CurrentCulture"
+              Height="500px" />
+
+@if (CurrentCulture == "el-GR")
+{
+    <div class="alert alert-info">
+        <strong>Enable Greek Spell Checking:</strong>
+        <ul>
+            <li><strong>Chrome/Edge:</strong> Settings → Languages → Spell Check → Add Greek → Enable spell checking.</li>   
+        </ul>
+        <p>After enabling, refresh the page and start typing in Greek to see misspellings highlighted.</p>
+    </div>
+
+}
+
+@code {
+    private string HtmlContent = "<p>Γράψε κάτι εδώ...</p>";
+    private string CurrentCulture = "el-GR";
+
+
+}
